@@ -49,6 +49,21 @@ mv "$source_dir/Libbox.xcframework" "$output_dir/Libbox.xcframework"
 
 # This is the existing, ignored Xcode input. Replace the whole framework so a
 # previous simulator/device slice cannot silently survive the new build.
+mkdir -p "$apple_dir/build"
+lock_dir="$apple_dir/build/libbox-sfi.lock"
+if ! mkdir "$lock_dir" 2>/dev/null; then
+    echo "Another build owns $lock_dir; library remains at $output_dir/Libbox.xcframework" >&2
+    exit 1
+fi
+printf '%s\n' "$$" > "$lock_dir/pid"
+release_lock() {
+    if [[ -f "$lock_dir/pid" && "$(cat "$lock_dir/pid")" == "$$" ]]; then
+        rm "$lock_dir/pid"
+        rmdir "$lock_dir"
+    fi
+}
+trap release_lock EXIT
+trap 'exit 130' INT TERM
 if [[ -L "$apple_dir/Libbox.xcframework" ]]; then
     echo "Refusing to replace a symlink at Libbox.xcframework" >&2
     exit 1
@@ -85,4 +100,8 @@ if [[ -n "${SFI_SOURCE_PACKAGES:-}" ]]; then
     xcode_args+=(-clonedSourcePackagesDirPath "$SFI_SOURCE_PACKAGES")
 fi
 xcodebuild "${xcode_args[@]}" > "$output_dir/sfi-build.log" 2>&1
+(
+    cd "$apple_dir"
+    shasum -a 256 -c "$output_dir/Libbox.sha256"
+) >> "$output_dir/framework-verification.log"
 echo "Unsigned SFI build completed: $output_dir"

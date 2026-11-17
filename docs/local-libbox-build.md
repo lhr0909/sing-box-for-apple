@@ -33,6 +33,9 @@ directory for each run. `SFI_SOURCE_PACKAGES` can point to an external Xcode
 package cache. Native compilation runs in an archived source directory and
 does not write to the shared core checkout. The archive has no Git metadata, so
 the embedded version can be `unknown`; use `core-commit.txt` to identify it.
+Framework staging and SFI compilation hold `build/libbox-sfi.lock` so concurrent
+script invocations cannot overwrite each other's Xcode input. A conflicting
+invocation keeps its completed library in the output directory and exits.
 
 Snell v2 provides TCP only. Snell v3 also supports UDP over TCP. These build
 checks establish compilation against a particular library, not interoperability
