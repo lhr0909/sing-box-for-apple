@@ -60,6 +60,23 @@ ditto "$output_dir/Libbox.xcframework" "$apple_dir/Libbox.xcframework"
     shasum -a 256 -c "$output_dir/Libbox.sha256"
 ) > "$output_dir/framework-verification.log"
 
+# This small, dependency-free check still verifies the generated Swift bridge
+# if unrelated application packages prevent the full SFI build from starting.
+cat > "$output_dir/libbox-smoke.swift" <<'SWIFT'
+import Foundation
+import Libbox
+
+func validateProfile(_ content: String) throws {
+    var error: NSError?
+    LibboxCheckConfig(content, &error)
+    if let error { throw error }
+}
+SWIFT
+xcrun swiftc -typecheck -target arm64-apple-ios15.0 \
+    -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" \
+    -F "$output_dir/Libbox.xcframework/ios-arm64" \
+    "$output_dir/libbox-smoke.swift" > "$output_dir/libbox-smoke.log" 2>&1
+
 xcode_args=(-project "$apple_dir/sing-box.xcodeproj" -scheme SFI
     -configuration Debug -destination 'generic/platform=iOS'
     -derivedDataPath "$output_dir/DerivedData"

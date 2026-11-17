@@ -22,12 +22,13 @@ Then build an exact committed core snapshot and compile SFI:
 The script uses the core's `make lib_install` and `build_libbox` entrypoints,
 including their normal Tailscale and protocol build tags. It builds only the
 `ios/arm64` device slice, replaces the ignored root `Libbox.xcframework`, verifies
-its SHA-256 hashes, then builds SFI for generic iOS with signing disabled. It
+its SHA-256 hashes, typechecks the Swift configuration-validation bridge, then
+builds SFI for generic iOS with signing disabled. It
 does not install or launch the app. Signing, provisioning and device acceptance
 require separate validation.
 
 Output includes the core and Apple commit IDs, toolchain versions, framework
-hashes, native and Xcode build logs, and DerivedData. Use a new empty output
+hashes, native/Swift/Xcode build logs, and DerivedData. Use a new empty output
 directory for each run. `SFI_SOURCE_PACKAGES` can point to an external Xcode
 package cache. Native compilation runs in an archived source directory and
 does not write to the shared core checkout. The archive has no Git metadata, so
