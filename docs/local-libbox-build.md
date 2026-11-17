@@ -26,6 +26,8 @@ its SHA-256 hashes, typechecks the Swift configuration-validation bridge, then
 builds SFI for generic iOS with signing disabled. It
 does not install or launch the app. Signing, provisioning and device acceptance
 require separate validation.
+Swift packages use the committed `Package.resolved` versions without updating
+remote branches.
 
 Output includes the core and Apple commit IDs, toolchain versions, framework
 hashes, native/Swift/Xcode build logs, and DerivedData. Use a new empty output

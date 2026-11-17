@@ -95,6 +95,7 @@ xcrun swiftc -typecheck -target arm64-apple-ios15.0 \
 xcode_args=(-project "$apple_dir/sing-box.xcodeproj" -scheme SFI
     -configuration Debug -destination 'generic/platform=iOS'
     -derivedDataPath "$output_dir/DerivedData"
+    -onlyUsePackageVersionsFromResolvedFile -skipPackageUpdates
     CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build)
 if [[ -n "${SFI_SOURCE_PACKAGES:-}" ]]; then
     xcode_args+=(-clonedSourcePackagesDirPath "$SFI_SOURCE_PACKAGES")
