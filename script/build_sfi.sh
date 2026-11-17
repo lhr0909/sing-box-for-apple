@@ -60,14 +60,12 @@ ditto "$output_dir/Libbox.xcframework" "$apple_dir/Libbox.xcframework"
     shasum -a 256 -c "$output_dir/Libbox.sha256"
 ) > "$output_dir/framework-verification.log"
 
-xcode_args=()
+xcode_args=(-project "$apple_dir/sing-box.xcodeproj" -scheme SFI
+    -configuration Debug -destination 'generic/platform=iOS'
+    -derivedDataPath "$output_dir/DerivedData"
+    CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build)
 if [[ -n "${SFI_SOURCE_PACKAGES:-}" ]]; then
     xcode_args+=(-clonedSourcePackagesDirPath "$SFI_SOURCE_PACKAGES")
 fi
-xcodebuild -project "$apple_dir/sing-box.xcodeproj" -scheme SFI \
-    -configuration Debug -destination 'generic/platform=iOS' \
-    -derivedDataPath "$output_dir/DerivedData" \
-    "${xcode_args[@]}" \
-    CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
-    build > "$output_dir/sfi-build.log" 2>&1
+xcodebuild "${xcode_args[@]}" > "$output_dir/sfi-build.log" 2>&1
 echo "Unsigned SFI build completed: $output_dir"
