@@ -101,6 +101,9 @@ xcode_args=(-project "$apple_dir/sing-box.xcodeproj" -scheme SFI
 if [[ -n "${SFI_SOURCE_PACKAGES:-}" ]]; then
     xcode_args+=(-clonedSourcePackagesDirPath "$SFI_SOURCE_PACKAGES")
 fi
+if [[ -n "${SFI_IOS_DEPLOYMENT_TARGET:-}" ]]; then
+    xcode_args+=("IPHONEOS_DEPLOYMENT_TARGET=$SFI_IOS_DEPLOYMENT_TARGET")
+fi
 xcodebuild "${xcode_args[@]}" > "$output_dir/sfi-build.log" 2>&1
 (
     cd "$apple_dir"

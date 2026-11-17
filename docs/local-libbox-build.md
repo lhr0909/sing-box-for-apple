@@ -29,6 +29,13 @@ require separate validation.
 Swift packages use the committed `Package.resolved` versions without updating
 remote branches.
 
+With Xcode 26.4.1, the pinned client can fail its iOS 15 build in
+`SFI/MainView.swift` because a SwiftUI `buildIf` requires iOS 16 or newer.
+`SFI_IOS_DEPLOYMENT_TARGET=18.0` overrides the deployment target for a compilation
+check while accommodating the widget's existing iOS 18 requirement. This does
+not edit the project; the resulting app requires iOS 18 and does not establish
+iOS 15 compatibility.
+
 Output includes the core and Apple commit IDs, toolchain versions, framework
 hashes, native/Swift/Xcode build logs, and DerivedData. Use a new empty output
 directory for each run. `SFI_SOURCE_PACKAGES` can point to an external Xcode
