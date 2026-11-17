@@ -25,7 +25,6 @@ mkdir "$source_dir"
 git -C "$core_dir" archive "$core_commit" | tar -x -C "$source_dir"
 git -C "$core_dir" show -s --format=%cI "$core_commit" > "$output_dir/core-commit-date.txt"
 printf '%s\n' "$core_commit" > "$output_dir/core-commit.txt"
-git -C "$apple_dir" rev-parse HEAD > "$output_dir/apple-commit.txt"
 go version > "$output_dir/go-version.txt"
 xcodebuild -version > "$output_dir/xcode-version.txt"
 
@@ -64,6 +63,8 @@ release_lock() {
 }
 trap release_lock EXIT
 trap 'exit 130' INT TERM
+git -C "$apple_dir" rev-parse HEAD > "$output_dir/apple-commit.txt"
+shasum -a 256 "$0" > "$output_dir/build-script.sha256"
 if [[ -L "$apple_dir/Libbox.xcframework" ]]; then
     echo "Refusing to replace a symlink at Libbox.xcframework" >&2
     exit 1
